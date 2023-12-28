@@ -97,8 +97,18 @@ export async function middleware(request) {
             response = await appliedFilter.filter(response);
         }
     }
-    const buffer = (await response?.arrayBuffer());
+    let buffer = (await response?.arrayBuffer());
     if (!buffer) request.cache = true;
+
+    const type = response.headers.get('content-type') ?? "";
+    if (type.includes("html")) {
+        const replacementUrl = new URL(CrawlerConfig.url);
+        let source = Buffer.from(buffer).toString();
+        source = source.replaceAll(CrawlerConfig.url, "");
+        source = source.replaceAll(replacementUrl.host,"localhost");
+        buffer = Buffer.from(source);
+    }
+
     const res = new Response(buffer ?? "RETRY", {
         headers: responseHeaders,
         status: response?.status,
