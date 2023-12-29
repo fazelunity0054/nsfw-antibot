@@ -1,6 +1,6 @@
 
 import CrawlerConfig from './config.js';
-import DastansFilter from './filters/dastans.js';
+import DastansFilter, {handleFormData} from './filters/dastans.js';
 import { getCookieAndToken } from './antibot/cloudflare.js';
 import {getSaveName, saveResponse} from './antibot/storageCache.js';
 import fs from "fs";
@@ -63,8 +63,7 @@ export async function handleIncomeRequest(request) {
     const {token: cToken, cookie: cCookie} = await getCookieAndToken();
     headers.cookie = cCookie?.split?.(";")[0];
     let formData = new FormData();
-    formData.append("token", cToken);
-    formData.append("page", "0")
+    handleFormData(formData, cToken, urlObj);
 
     const obj = new URL(request.url);
     const url = CrawlerConfig.url + obj.pathname + obj.search;
@@ -72,7 +71,6 @@ export async function handleIncomeRequest(request) {
         method: request.method,
         headers,
         body: obj.pathname.startsWith("/search") ? formData:null,
-        mode: request.mode,
         referrer: url,
         referrerPolicy: "strict-origin-when-cross-origin",
         credentials: "include"

@@ -3,10 +3,26 @@ import { getCookieAndToken } from '../antibot/cloudflare.js';
 import { parse } from 'node-html-parser';
 
 
+/**
+ *
+ * @param formData {FormData}
+ * @param token {string}
+ * @param url {URL}
+ * @return void
+ */
+export function handleFormData(formData, token, url) {
+    formData.append("token", token);
+    formData.append("page", url.searchParams.get('page') ?? "0");
+    const query = url.searchParams.get('search') ?? url.searchParams.get('s');
+    if (query) {
+        formData.append("s", query);
+        formData.append("search", query);
+    }
+}
 
 export default async function DastansFilter(response) {
 
-    const types = ["dastanbynewest","dastanbyoldest","dastanmstlks","dastanmstdslks","dastanmstvsts"];
+    const types = ["dastanbynewest","dastanbyoldest","dastanmstlks","dastanmstdslks","dastanmstvsts","search"];
 
     const url = new URL(response.url);
 
@@ -15,8 +31,7 @@ export default async function DastansFilter(response) {
     if (type) {
         const formData = new FormData();
         const {token, cookie} = await getCookieAndToken();
-        formData.append("token", token);
-        formData.append("page", url.searchParams.get('page') ?? "0");
+        handleFormData(formData, token, url);
 
         const newResponse = await forceFetch(`${url.origin}/search/${type}`, {
             headers: {
@@ -65,7 +80,8 @@ const getsortTitle = (activeWindow) => {
 
         case "dastanbyoldest":
             return "قدیمی‌ترین";
-
+        case "search":
+            return "جستجو";
         default:
             return "";
     }
