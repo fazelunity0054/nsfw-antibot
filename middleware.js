@@ -29,6 +29,8 @@ export async function handleIncomeRequest(request) {
     const infoPath = process.cwd() + `/public/caches/info/${cacheName}.json`;
     const exists = fs.existsSync(cachePath) && fs.existsSync(infoPath);
     const valid = ()=>{
+        if (urlObj.searchParams.has('cache')) return true;
+
         const info = JSON.parse(fs.readFileSync(infoPath).toString())
         const date = new Date(info.date);
         date.setDate(date.getDate() + 2);
@@ -115,7 +117,8 @@ export async function middleware(request) {
         statusText: response?.statusText
     });
 
-    if (!request?.cache) await saveResponse(request.url, res);
+    if (!request?.cache && (response.status > 100 && response.status < 400)) await saveResponse(request.url, res);
+
     return res;
 }
 
