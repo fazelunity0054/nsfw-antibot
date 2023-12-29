@@ -30,6 +30,7 @@ export async function handleIncomeRequest(request) {
     const exists = fs.existsSync(cachePath) && fs.existsSync(infoPath);
     const valid = ()=>{
         if (urlObj.searchParams.has('cache')) return true;
+        if (urlObj.searchParams.has('refetch')) return false;
 
         const info = JSON.parse(fs.readFileSync(infoPath).toString())
         const date = new Date(info.date);
