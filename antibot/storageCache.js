@@ -1,12 +1,6 @@
 import { updateFile } from '../utils/file.js';
 
-
-
 const FOLDER = "/caches";
-
-export function getContent(pathname) {
-
-}
 
 export function getSaveName({pathname, search}) {
     return pathname.replaceAll("/", "_")+"()"+search.replaceAll("&","_").replaceAll("?","_");
@@ -44,8 +38,4 @@ export async function saveResponse(url, response) {
     });
     const contentPath = `${FOLDER}/info/${contentFile.name}`
     await updateFile(contentFile,contentPath,contentPath);
-}
-
-export function setContent(pathname, arrayBuffer) {
-    console.log(pathname, arrayBuffer)
 }

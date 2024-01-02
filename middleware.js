@@ -34,7 +34,7 @@ export async function handleIncomeRequest(request) {
 
         const info = JSON.parse(fs.readFileSync(infoPath).toString())
         const date = new Date(info.date);
-        date.setDate(date.getDate() + 2);
+        date.setHours(date.getHours() + 12);
         const now = new Date();
 
         return date > now;
@@ -49,7 +49,6 @@ export async function handleIncomeRequest(request) {
     }
 
     if (exists && valid()) {
-        console.log("HIT:",urlObj.pathname)
         return makeCacheResponse();
     }
 
